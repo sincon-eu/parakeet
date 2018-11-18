@@ -1,5 +1,5 @@
-from time import sleep
-
+import os
+from configparser import ConfigParser
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -36,6 +36,9 @@ class ParkingALot():
     def main(self, order=False, *args, **kwargs):
 
         # tile_id_to_click = "offer-obc-parking-pkp-2018-12"
+        cfg_ = ConfigParser()
+        # todo join it with os.path
+        cfg_.read(os.path.join(os.path.dirname(__file__), 'src/config/main_conf.ini'))
 
         cookie_btn = "confirm-cookie-consent"
         go_buy_form_id = "goToBuyForm"
@@ -101,7 +104,7 @@ class ParkingALot():
 if __name__ == '__main__':
 
     # expected value :p PRODUCTION
-    parking_id_to_click = "offer-obc-f-2019-01"
+    # parking_id_to_click = "offer-obc-f-2019-01"
     # park_my_car = ParkingALot(order=True, parking_id_to_click)
 
     # debug
