@@ -37,35 +37,13 @@ class ParkingALot():
 
         # tile_id_to_click = "offer-obc-parking-pkp-2018-12"
         cfg_ = ConfigParser()
+        cfg_.optionxform = str
         # todo join it with os.path
         cfg_.read(os.path.join(os.path.dirname(__file__), 'src/config/main_conf.ini'))
 
-        cookie_btn = "confirm-cookie-consent"
-        go_buy_form_id = "goToBuyForm"
-
-        name_id = 'name'
-        email_id = 'email'
-        licence_id = 'primaryLicensePlate'
-
-        invoice_btn = 'wantsAnInvoice'
-        personal_data_btn = "acceptsPersonalDataTerms"
-        terms_btn = "terms"
-        parking_terms_btn = "parkingTerms"
-
-        company_name = "companyName"
-        company_address = "companyAddress"
-        tax_number = "taxNumber"
-
-        buy_subscription_btn = "buySubscriptionButton"
-
-        # confirms order
-        buy_with_payment_obligation = "buyWithPaymentObligation"
-
-        # option = webdriver.ChromeOptions()
-        # option.add_argument('— incognito')
-
-        # browser = webdriver.Chrome(executable_path='src/webdriver/chromedriver.exe',
-        #                            chrome_options=option)
+        personal = dict(cfg_.items('Personal'))
+        invoice = dict(cfg_.items('Invoice'))
+        clickables = dict(cfg_.items('Clickables'))
 
         self.chrome_browser.get("https://go.parkanizer.com/#/offers")
 
@@ -74,32 +52,28 @@ class ParkingALot():
 
         # skip main page
         self.click_by_id(self.parking_id_to_click)
-        self.click_by_id(cookie_btn)
-        self.click_by_id(go_buy_form_id)
+        self.click_by_id(clickables['cookie_btn'])
+        self.click_by_id(clickables['go_buy_form_id'])
 
         # fill textboxes
-        self.check_if_loaded(name_id, timeout=2)
-        self.fill_element(name_id, 'Franek ma parking')
-        self.fill_element(email_id, 'jakis@email.com')
-        self.fill_element(licence_id, 'GA123RR')
+        self.check_if_loaded(personal['name'], timeout=2)
 
-        self.click_by_id(invoice_btn)
-        self.click_by_id(personal_data_btn)
-        self.click_by_id(terms_btn)
-        self.click_by_id(parking_terms_btn)
+        for k, v in personal.items():
+            self.fill_element(k, v)
 
-        self.fill_element(company_name, 'Weltmeister')
-        self.fill_element(company_address, 'Planet \nEarth')
-        self.fill_element(tax_number, 10 * '6')
+        self.click_by_id(clickables['invoice_btn'])
+        self.click_by_id(clickables['personal_data_btn'])
+        self.click_by_id(clickables['terms_btn'])
+        self.click_by_id(clickables['parking_terms_btn'])
 
-        self.click_by_id(buy_subscription_btn)
+        for k, v in invoice.items():
+            self.fill_element(k, v)
+
+        self.click_by_id(clickables['buy_subscription_btn'])
 
         # watch out for this
         if order:
-            self.click_by_id(buy_with_payment_obligation)
-
-        a = 5
-
+            self.click_by_id(clickables['buy_with_payment_obligation'])
 
 if __name__ == '__main__':
 
