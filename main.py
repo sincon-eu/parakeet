@@ -9,7 +9,7 @@ from selenium.common.exceptions import TimeoutException
 
 class ParkingALot():
 
-    def __init__(self, order: bool=False, parking_id_to_click: str="offer-obc-parking-pkp-2018-12"):
+    def __init__(self, order: bool = False, parking_id_to_click: str = "offer-obc-parking-pkp-2018-12"):
         self.order = order
         self.chrome_browser = webdriver.Chrome(executable_path='src/webdriver/chromedriver.exe',
                                                chrome_options=None)
@@ -25,7 +25,8 @@ class ParkingALot():
 
     def check_if_loaded(self, elem_id: str, timeout: int = 2) -> bool:
         try:
-            WebDriverWait(self.chrome_browser, timeout).until(EC.visibility_of_element_located((By.ID, elem_id)))
+            WebDriverWait(self.chrome_browser, timeout).until(
+                EC.visibility_of_element_located((By.ID, elem_id)))
             return True
         except TimeoutException:
             print(f'Unable to find, {elem_id}')
@@ -39,7 +40,8 @@ class ParkingALot():
         cfg_ = ConfigParser()
         cfg_.optionxform = str
         # todo join it with os.path
-        cfg_.read(os.path.join(os.path.dirname(__file__), 'src/config/main_conf.ini'))
+        cfg_.read(os.path.join(os.path.dirname(
+            __file__), 'src/config/main_conf.ini'))
 
         personal = dict(cfg_.items('Personal'))
         invoice = dict(cfg_.items('Invoice'))
@@ -50,30 +52,35 @@ class ParkingALot():
         while not self.check_if_loaded(self.parking_id_to_click, timeout=2):
             self.check_if_loaded(self.parking_id_to_click, timeout=2)
 
-        # skip main page
+        # Fill up first page
         self.click_by_id(self.parking_id_to_click)
         self.click_by_id(clickables['cookie_btn'])
         self.click_by_id(clickables['go_buy_form_id'])
 
-        # fill textboxes
+        # Wait for next page
         self.check_if_loaded(personal['name'], timeout=2)
 
+        # Fill up second page with personal data
         for k, v in personal.items():
             self.fill_element(k, v)
 
+        # Select the checkboxes of terms and invoice
         self.click_by_id(clickables['invoice_btn'])
         self.click_by_id(clickables['personal_data_btn'])
         self.click_by_id(clickables['terms_btn'])
         self.click_by_id(clickables['parking_terms_btn'])
 
+        # Fill up the data for invoice
         for k, v in invoice.items():
             self.fill_element(k, v)
 
+        # Go to last page
         self.click_by_id(clickables['buy_subscription_btn'])
 
-        # watch out for this
+        # Once it's clicked, it reserves the parking space and waits 30 min for payment
         if order:
             self.click_by_id(clickables['buy_with_payment_obligation'])
+
 
 if __name__ == '__main__':
 
